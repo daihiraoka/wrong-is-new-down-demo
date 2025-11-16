@@ -112,15 +112,14 @@ EOF
 
 log_success "データベースとユーザーの作成完了"
 
-# Step 5: 作業ディレクトリの作成
-log_info "Step 5: 作業ディレクトリの作成中..."
+# Step 5: 環境変数の設定
+log_info "Step 5: 環境変数の設定中..."
 DEMO_USER="ubuntu"
 DEMO_HOME="/home/$DEMO_USER"
-DEMO_DIR="$DEMO_HOME/demo/wrong-is-new-down-demo"
+DEMO_DIR="$DEMO_HOME/wrong-is-new-down-demo"
 
-mkdir -p "$DEMO_DIR"
-chown -R $DEMO_USER:$DEMO_USER "$DEMO_HOME/demo"
-log_success "作業ディレクトリの作成完了: $DEMO_DIR"
+# Note: ZIPファイルを解凍すると自動的にwrong-is-new-down-demo/ディレクトリが作成されます
+log_success "想定ディレクトリ: $DEMO_DIR"
 
 # Step 6: Python仮想環境の作成
 log_info "Step 6: Python仮想環境の作成中..."
@@ -163,8 +162,10 @@ log_success "=========================================="
 echo ""
 log_info "次のステップ:"
 echo ""
-echo "1. Djangoアプリケーションファイルを配置してください:"
-echo "   $DEMO_DIR/demo_app/"
+echo "1. ZIPファイルをホームディレクトリに配置して解凍してください:"
+echo "   cd $DEMO_HOME"
+echo "   unzip wrong-is-new-down-demo.zip"
+echo "   # これで $DEMO_DIR/ が作成されます"
 echo ""
 echo "2. 環境変数ファイル (.env) を作成してください:"
 echo "   cd $DEMO_DIR/demo_app"

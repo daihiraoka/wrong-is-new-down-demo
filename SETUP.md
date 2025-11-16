@@ -90,10 +90,16 @@ cd ~/demo
 ### Step 6: デモアプリケーションのセットアップ
 
 ```bash
-# リポジトリのクローン（または手動でファイルを配置）
-# ※ここでは手動配置を想定
-mkdir -p ~/demo/wrong-is-new-down-demo
-cd ~/demo/wrong-is-new-down-demo
+# ZIPファイルの解凍
+cd ~
+unzip wrong-is-new-down-demo.zip
+cd wrong-is-new-down-demo
+
+# ディレクトリ構造:
+# /home/ubuntu/wrong-is-new-down-demo/  ← プロジェクトルート
+#   ├── demo_app/                      ← Djangoアプリケーション
+#   ├── scripts/                       ← 運用スクリプト
+#   └── setup_ec2.sh                  ← セットアップスクリプト
 
 # Python仮想環境の作成
 python3 -m venv venv
@@ -129,7 +135,7 @@ sudo journalctl -u instana-agent -f
 
 ```bash
 # demo_appディレクトリに移動
-cd ~/demo/wrong-is-new-down-demo/demo_app
+cd ~/wrong-is-new-down-demo/demo_app
 
 # 環境変数の設定（.envファイルを作成）
 cat > .env << EOF
