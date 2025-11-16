@@ -14,7 +14,7 @@
 
 #### 1. 環境準備
 ```bash
-cd ~/demo/wrong-is-new-down-demo/scripts
+cd ~/wrong-is-new-down-demo/scripts
 ./switch_to_problem.sh
 ```
 
@@ -36,7 +36,7 @@ python manage.py runserver 0.0.0.0:8000
 #### 3. データベース接続を壊す
 ```bash
 # 別のターミナルで実行
-cd ~/demo/wrong-is-new-down-demo/scripts
+cd ~/wrong-is-new-down-demo/scripts
 ./break_database.sh
 ```
 
@@ -104,7 +104,7 @@ Django標準エラーハンドリングに変更することで、Instanaが正�
 
 #### 1. 修正版への切り替え
 ```bash
-cd ~/demo/wrong-is-new-down-demo/scripts
+cd ~/wrong-is-new-down-demo/scripts
 ./switch_to_fixed.sh
 ```
 
@@ -171,7 +171,7 @@ http://<EC2-PUBLIC-IP>:8000/login/
 
 #### 1. データベース接続の修復
 ```bash
-cd ~/demo/wrong-is-new-down-demo/scripts
+cd ~/wrong-is-new-down-demo/scripts
 ./fix_database.sh
 ```
 
@@ -323,7 +323,5 @@ HTTP 200が返り、ログインが成功しました。
 ### ブラウザが接続できない
 → セキュリティグループの設定を再確認、または ngrok などのトンネリングツールを使用
 
----
 
-このデモシナリオを通じて、「Wrong is the new Down」という新しい概念を、
-技術者だけでなく、マネージャーやビジネス関係者にも理解してもらえます。
+
