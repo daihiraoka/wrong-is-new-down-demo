@@ -9,5 +9,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index_view, name='index'),
     path('login/', views.login_view, name='login'),
+    path('logout/', views.login_view, name='logout'),
     path('500.html', views.custom_500_view, name='custom_500'),
 ]
