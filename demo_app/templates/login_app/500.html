@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 サーバー内部エラー</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN', 'Meiryo', 'メイリオ', sans-serif;
+            background-color: #f8d7da;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #721c24;
+            font-size: 72px;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #721c24;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #721c24;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background: #721c24;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #491217;
+        }
+        
+        .technical-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .technical-info h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .technical-info pre {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #495057;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        
+        .demo-badge {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">⚠️</div>
+        <h1>500</h1>
+        <h2>サーバー内部エラー</h2>
+        <p>申し訳ございません。サーバーエラーが発生しました。</p>
+        <p>システム管理者に連絡してください。</p>
+        
+        <div class="demo-badge">BEFORE版 - 問題モード</div>
+        
+        <a href="/" class="back-button">ホームに戻る</a>
+        
+        <div class="technical-info">
+            <h3>技術情報</h3>
+            <pre>エラータイプ: データベース接続エラー
+詳細: アプリケーションがデータベースへの接続中に
+      エラーに遭遇しました。これは設定ミスまたは
+      データベースが利用できないことが原因の可能性があります。
+
+注意: このエラーページはHTTP 200ステータスコードで返されています。
+     監視ツール（Instana）は、前のページからのHTTP 302リダイレクトと
+     このHTTP 200レスポンスの組み合わせを「正常」と判定します。
+     
+     これが「Wrong is the new Down」現象です！</pre>
+        </div>
+    </div>
+</body>
+</html>
