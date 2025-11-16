@@ -1,14 +1,14 @@
 """
-AFTER version: Views with Django standard error handling (HTTP 500)
+AFTER版: Django標準エラーハンドリング（HTTP 500）
 
-This version demonstrates the correct error handling approach where
-database errors are allowed to propagate, resulting in proper HTTP 500
-error responses that monitoring tools can detect.
+この版は、正しいエラーハンドリングアプローチを示します。
+データベースエラーが発生した際に、例外をキャッチせずにDjangoの
+標準エラーハンドラーに伝播させるため、HTTP 500ステータスコードになります。
 
-This is the "Fixed" scenario where:
-- Database errors result in HTTP 500 status codes
-- Monitoring tools correctly identify the error
-- Proper alerting and incident response can occur
+これが「修正された」シナリオです：
+- データベースエラーは適切にHTTP 500として報告される
+- 監視ツールはエラーを正しく識別できる
+- 適切なアラートとインシデント対応が可能になる
 """
 
 from django.http import HttpResponse
@@ -19,29 +19,29 @@ import psycopg2
 
 
 def index_view(request):
-    """Home page view"""
+    """ホームページビュー"""
     return render(request, 'login_app/index.html')
 
 
 def login_view(request):
     """
-    Login view with Django standard error handling (AFTER version)
+    ログインビュー - Django標準エラーハンドリング（AFTER版）
     
-    SOLUTION: This view does NOT catch OperationalError.
-    Exceptions propagate to Django's standard error handler, which returns HTTP 500.
+    解決策: このビューはOperationalErrorをキャッチしません。
+    例外はDjangoの標準エラーハンドラーに伝播され、HTTP 500を返します。
     """
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         
-        # No try-except for database errors!
-        # Let Django's standard error handling deal with it
+        # データベースエラーのtry-exceptなし！
+        # Djangoの標準エラーハンドリングに任せます
         
-        # Use custom database connection class
-        conn = DatabaseConnection.get_connection()  # May raise OperationalError
+        # 独自データベース接続クラスを使用
+        conn = DatabaseConnection.get_connection()  # OperationalErrorを発生させる可能性
         cursor = conn.cursor()
         
-        # Query user from database
+        # データベースからユーザーを検索
         cursor.execute(
             "SELECT id, username, password FROM auth_user WHERE username = %s",
             [username]
@@ -52,27 +52,27 @@ def login_view(request):
         conn.close()
         
         if user:
-            # In a real application, you would verify the password hash here
-            # For demo purposes, we just check if user exists
-            return HttpResponse(
-                "<h1>Login Success</h1><p>Welcome back!</p>",
-                status=200
-            )
+            # 実際のアプリケーションでは、パスワードハッシュを検証します
+            # デモ目的では、ユーザーの存在のみをチェックします
+            scenario = request.POST.get('scenario', 'after')
+            context = {
+                'username': username,
+                'scenario': scenario
+            }
+            return render(request, 'login_app/index.html', context, status=200)
         else:
-            return HttpResponse(
-                "<h1>Login Failed</h1><p>Invalid username or password</p>",
-                status=401
-            )
+            context = {'error_message': 'ユーザー名またはパスワードが無効です'}
+            return render(request, 'login_app/login.html', context, status=401)
             
     return render(request, 'login_app/login.html')
 
 
 def custom_500_view(request):
     """
-    Custom 500 error page view
+    カスタム500エラーページビュー
     
-    In AFTER version, this is typically not accessed via redirect.
-    Django's standard error handler will render templates/500.html directly.
-    This view exists for compatibility.
+    AFTER版では、このビューは通常リダイレクト経由ではアクセスされません。
+    Djangoの標準エラーハンドラーがtemplates/500.htmlを直接レンダリングします。
+    このビューは互換性のために存在します。
     """
-    return render(request, 'login_app/500.html', status=500)  # Returns HTTP 500
+    return render(request, 'login_app/500.html', status=500)  # HTTP 500を返す
