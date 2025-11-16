@@ -1,0 +1,24 @@
+# Django and Web Framework
+Django==4.2.7
+gunicorn==21.2.0
+
+# Database
+psycopg2-binary==2.9.9
+
+# Environment Variables
+python-decouple==3.8
+
+# HTTP and Requests
+requests==2.31.0
+
+# Date and Time
+python-dateutil==2.8.2
+
+# Instana (optional - for enhanced tracing)
+instana==2.1.0
+
+# Development and Debugging
+django-debug-toolbar==4.2.0
+
+# Security
+django-cors-headers==4.3.0
