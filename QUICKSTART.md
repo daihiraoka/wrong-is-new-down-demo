@@ -11,7 +11,7 @@ AWS EC2（Ubuntu）で「Wrong is the new Down」デモを最速でセットア�
 
 ---
 
-## 📋 前提条件チェックリスト
+## 前提条件チェックリスト
 
 ### AWS EC2インスタンス
 - [ ] Ubuntu 22.04 LTS
