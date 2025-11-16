@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wrong is the new Down - デモアプリケーション</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN', 'Meiryo', 'メイリオ', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            padding: 50px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .concept {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .concept h2 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .concept p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info {
+            margin-top: 30px;
+            padding: 25px;
+            background: #fff3cd;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .info h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .info ul {
+            list-style-position: inside;
+            color: #856404;
+        }
+        
+        .info li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .poc-info {
+            margin-top: 30px;
+            padding: 25px;
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .poc-info h3 {
+            color: #0c5460;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .poc-info p {
+            color: #0c5460;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wrong is the new Down</h1>
+        <p class="subtitle">デモンストレーションアプリケーション</p>
+        
+        <div class="concept">
+            <h2>「Wrong is the new Down」とは？</h2>
+            <p>
+                従来の監視は、システムの停止（Down）のみを検知していました。
+                しかし、現代のアプリケーションでは、システムは動作しているが結果が間違っている（Wrong）という新しい問題が発生します。
+                このデモでは、カスタムエラーハンドリングが実際のエラーを監視ツールから隠してしまう様子を示します。
+            </p>
+        </div>
+        
+        <a href="/login/" class="button">ログインデモを試す</a>
+        
+        <div class="info">
+            <h3>デモシナリオ</h3>
+            <ul>
+                <li><strong>正常モード:</strong> システムが正しく動作（HTTP 200）</li>
+                <li><strong>問題モード:</strong> データベースエラーがHTTP 302を返し、監視ツールが見逃す</li>
+                <li><strong>修正モード:</strong> データベースエラーがHTTP 500を返し、適切にエラーを検知</li>
+            </ul>
+        </div>
+        
+        <div class="poc-info">
+            <h3>実際のPoC事例（2025年9月9日）</h3>
+            <p>
+                <strong>発見された問題:</strong> Instana検証中に、Djangoアプリケーションでデータベース接続エラー発生時に、
+                ログではERRORとして記録されるが、HTTPレスポンスコードが302（リダイレクト）となり、
+                監視システムでは正常動作として認識される問題を発見。
+            </p>
+            <p>
+                <strong>影響:</strong> 実際の障害が隠蔽され、運用監視の信頼性が著しく低下。
+                SLI/SLO測定値への悪影響、障害の早期発見・対応が困難になる。
+            </p>
+            <p>
+                <strong>解決策:</strong> Django標準エラーハンドリングへの変更により、
+                適切なHTTP 500ステータスコードを返却し、監視ツールが正しくエラーを検知できるように改善。
+            </p>
+        </div>
+    </div>
+</body>
+</html>

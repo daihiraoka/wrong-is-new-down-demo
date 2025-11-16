@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 サーバー内部エラー</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN', 'Meiryo', 'メイリオ', sans-serif;
+            background-color: #dc3545;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 700px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #dc3545;
+            font-size: 72px;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #dc3545;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #6c757d;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .explanation {
+            margin-top: 30px;
+            padding: 20px;
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            border-radius: 5px;
+            text-align: left;
+        }
+        
+        .explanation h3 {
+            color: #0c5460;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .explanation p {
+            color: #0c5460;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .explanation strong {
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🔧</div>
+        <h1>500</h1>
+        <h2>サーバー内部エラー</h2>
+        <p>サーバーエラーが発生しました。</p>
+        <p>このエラーは適切にHTTP 500ステータスで報告されます。</p>
+        
+        <div class="badge">AFTER版 - 修正モード（監視ツールが検知可能）</div>
+        
+        <div class="explanation">
+            <h3>修正内容（AFTER版）</h3>
+            <p>
+                <strong>Django標準エラーハンドリング:</strong> アプリケーションは
+                データベースエラーをtry-exceptでキャッチしなくなりました。
+                代わりに、Djangoの標準エラーハンドラーがHTTP 500を返すことで、
+                監視ツールが適切にエラーを検知できるようになります。
+            </p>
+            <p style="margin-top: 15px;">
+                <strong>監視への影響:</strong> HTTP 500ステータスコードにより、
+                Instanaなどの監視ツールはこのエラーを正しく「サーバーエラー」として
+                認識し、適切なアラートを発火させることができます。
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -2,21 +2,20 @@
 Django settings for Wrong is the new Down demo project.
 """
 
+from pathlib import Path
 import os
 import instana
-from pathlib import Path
-from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-demo-key-change-in-production')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-demo-key-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -26,7 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'login_app',  # Our demo app
+    'login_app',
 ]
 
 MIDDLEWARE = [
@@ -37,8 +36,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Custom error handler middleware (conditionally enabled)
-    'login_app.middleware.CustomErrorHandlerMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -62,14 +59,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
+# IMPORTANT: This database name is ALWAYS 'demo_app' (never changed)
+# The custom DB access class may connect to a different database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DATABASE_NAME', default='demo_app'),
-        'USER': config('DATABASE_USER', default='demo_user'),
-        'PASSWORD': config('DATABASE_PASSWORD', default='demo_password_123'),
-        'HOST': config('DATABASE_HOST', default='localhost'),
-        'PORT': config('DATABASE_PORT', default='5432'),
+        'NAME': os.getenv('DB_NAME', 'demo_app'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+        'CONN_MAX_AGE': 0,  # Disable connection pooling
     }
 }
 
@@ -102,53 +102,5 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Logging configuration
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'django.log',
-            'formatter': 'verbose',
-        },
-    },
-    'root': {
-        'handlers': ['console', 'file'],
-        'level': 'INFO',
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'login_app': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-}
-
-# Create logs directory if it doesn't exist
-LOGS_DIR = BASE_DIR / 'logs'
-LOGS_DIR.mkdir(exist_ok=True)
-
-# Custom Error Handler Configuration
-# Set this to True to enable the problematic custom error handler (HTTP 302)
-# Set this to False to use Django's standard error handling (HTTP 500)
-USE_CUSTOM_ERROR_HANDLER = config('USE_CUSTOM_ERROR_HANDLER', default=False, cast=bool)
-
-# Instana Configuration (optional)
-INSTANA_SERVICE_NAME = 'wrong-is-new-down-demo'
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = []

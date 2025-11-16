@@ -83,14 +83,10 @@ wrong-is-new-down-demo/
 # セキュリティグループ: 8000番ポート開放
 ```
 
-### 2. ファイルの配置と解凍
+### 2. セットアップ実行
 ```bash
-# ZIPファイルをEC2にアップロード後
-cd ~
-unzip wrong-is-new-down-demo.zip
+git clone <このリポジトリ>
 cd wrong-is-new-down-demo
-
-# セットアップスクリプトの実行
 chmod +x setup_ec2.sh
 sudo ./setup_ec2.sh
 ```

@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2025 Wrong is the new Down Demo Project Contributors
+Copyright (c) 2025 Wrong is the new Down Demo
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,22 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+DISCLAIMER:
+
+This software is provided for demonstration and educational purposes only.
+It is not intended for use in production environments. The authors and 
+contributors accept no responsibility for any damage, data loss, or security 
+issues that may arise from the use of this software.
+
+Users are solely responsible for:
+- Securing their environments
+- Protecting sensitive data
+- Complying with applicable laws and regulations
+- Ensuring appropriate use in non-production settings only
+
+This demonstration intentionally includes security weaknesses to illustrate 
+error handling concepts. Do not deploy this application in production or 
+expose it to untrusted networks without proper security hardening.

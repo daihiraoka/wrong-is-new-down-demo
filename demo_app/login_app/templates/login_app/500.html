@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 Internal Server Error</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8d7da;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #721c24;
+            font-size: 72px;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #721c24;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #721c24;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background: #721c24;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #491217;
+        }
+        
+        .technical-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .technical-info h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .technical-info pre {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">⚠️</div>
+        <h1>500</h1>
+        <h2>Internal Server Error</h2>
+        <p>申し訳ございません。サーバーエラーが発生しました。</p>
+        <p>システム管理者に連絡してください。</p>
+        
+        <a href="/" class="back-button">Back to Home</a>
+        
+        <div class="technical-info">
+            <h3>Technical Information</h3>
+            <pre>Error Type: Database Connection Error
+Timestamp: {{ timestamp }}
+Details: The application encountered an error while
+         connecting to the database. This may be due
+         to misconfiguration or database unavailability.</pre>
+        </div>
+    </div>
+</body>
+</html>

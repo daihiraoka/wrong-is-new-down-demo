@@ -1,394 +1,335 @@
-# セットアップ手順書
+# Detailed Setup Guide
 
-## 前提条件
+This guide provides comprehensive setup instructions for the "Wrong is the new Down" demonstration application.
 
-### AWS EC2インスタンス要件
-- **OS**: Ubuntu 22.04 LTS
-- **インスタンスタイプ**: t3.medium以上推奨
-  - vCPU: 2コア以上
-  - メモリ: 4GB以上
-- **ストレージ**: 20GB以上
-- **セキュリティグループ**:
-  - インバウンド: 8000番ポート（HTTP）
-  - インバウンド: 22番ポート（SSH）
-  - アウトバウンド: すべて許可
+## System Requirements
 
-### 必要な情報
-- IBM Instana Agent Key
-- IBM Instana Endpoint URL
-- （オプション）AWS RDSを使用する場合はエンドポイント情報
+- **Operating System**: Ubuntu 22.04 LTS
+- **Python**: 3.10 or higher
+- **PostgreSQL**: 14 or higher
+- **Memory**: Minimum 2GB RAM
+- **Disk Space**: Minimum 5GB free space
 
----
+## Architecture Overview
 
-## セットアップ手順
-
-### Step 1: EC2インスタンスへの接続
-
-```bash
-# SSH接続
-ssh -i your-key.pem ubuntu@<EC2-PUBLIC-IP>
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Django Application                        │
+├─────────────────────────────────────────────────────────────┤
+│  settings.py                                                 │
+│  DATABASE_NAME: 'demo_app' (always correct)                 │
+├─────────────────────────────────────────────────────────────┤
+│  Custom DB Access Class (db_utils.py)                       │
+│  DB_NAME: Configurable (can be wrong)                       │
+├─────────────────────────────────────────────────────────────┤
+│  Views                                                       │
+│  ├─ views_before.py (try-except → HTTP 302)                │
+│  └─ views_after.py  (Django standard → HTTP 500)           │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Step 2: システムの更新
+## Key Concept
+
+The demo reproduces the "Wrong is the new Down" scenario by:
+
+1. **Django's settings.py**: Always configured with correct database name
+   - This ensures Django starts successfully
+   - No startup errors occur
+
+2. **Custom DB Access Class**: Uses its own database connection
+   - Can be configured to connect to wrong database
+   - Simulates real-world scenarios where custom connection logic exists
+
+3. **Error Handling Versions**:
+   - **BEFORE**: Catches errors and returns HTTP 302 (redirect)
+   - **AFTER**: Lets errors propagate, returns HTTP 500 (proper error)
+
+## Installation Steps
+
+### Step 1: Automated Setup (Recommended)
 
 ```bash
-# パッケージリストの更新
-sudo apt update && sudo apt upgrade -y
+# Download the setup script
+curl -O https://raw.githubusercontent.com/YOUR_REPO/setup_ec2.sh
 
-# 必要な基本パッケージのインストール
-sudo apt install -y git curl wget vim build-essential
+# Make it executable
+chmod +x setup_ec2.sh
+
+# Run the setup (requires sudo)
+sudo ./setup_ec2.sh
 ```
 
-### Step 3: PostgreSQLのインストール
+The script will:
+- Update system packages
+- Install PostgreSQL
+- Install Python dependencies
+- Create PostgreSQL database and user
+- Set up Python virtual environment
+- Install Django and psycopg2
+
+### Step 2: Django Setup
 
 ```bash
-# PostgreSQLのインストール
-sudo apt install -y postgresql postgresql-contrib
+# Navigate to project directory
+cd ~/wrong-is-new-down-demo
 
-# PostgreSQLの起動と自動起動設定
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-
-# PostgreSQLのステータス確認
-sudo systemctl status postgresql
-```
-
-### Step 4: データベースとユーザーの作成
-
-```bash
-# PostgreSQLユーザーに切り替え
-sudo -u postgres psql
-
-# 以下をPostgreSQLコンソールで実行
-CREATE DATABASE demo_app;
-CREATE USER demo_user WITH PASSWORD 'demo_password_123';
-ALTER ROLE demo_user SET client_encoding TO 'utf8';
-ALTER ROLE demo_user SET default_transaction_isolation TO 'read committed';
-ALTER ROLE demo_user SET timezone TO 'Asia/Tokyo';
-GRANT ALL PRIVILEGES ON DATABASE demo_app TO demo_user;
-
-# 接続権限の付与（PostgreSQL 15以降の場合）
-\c demo_app
-GRANT ALL ON SCHEMA public TO demo_user;
-
-# 終了
-\q
-```
-
-### Step 5: Pythonとvirtualenvのセットアップ
-
-```bash
-# Python 3とpipのインストール確認
-python3 --version
-sudo apt install -y python3-pip python3-venv
-
-# 作業ディレクトリの作成
-mkdir -p ~/demo
-cd ~/demo
-```
-
-### Step 6: デモアプリケーションのセットアップ
-
-```bash
-# ZIPファイルの解凍
-cd ~
-unzip wrong-is-new-down-demo.zip
-cd wrong-is-new-down-demo
-
-# ディレクトリ構造:
-# /home/ubuntu/wrong-is-new-down-demo/  ← プロジェクトルート
-#   ├── demo_app/                      ← Djangoアプリケーション
-#   ├── scripts/                       ← 運用スクリプト
-#   └── setup_ec2.sh                  ← セットアップスクリプト
-
-# Python仮想環境の作成
-python3 -m venv venv
-
-# 仮想環境の有効化
+# Activate virtual environment
 source venv/bin/activate
 
-# 依存パッケージのインストール（後述のrequirements.txtから）
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+# Navigate to Django app
+cd demo_app
 
-### Step 7: IBM Instana Agentのインストール
-
-```bash
-# 環境変数の設定
-export INSTANA_AGENT_KEY="your-agent-key-here"
-export INSTANA_AGENT_ENDPOINT="your-endpoint-url"
-
-# Agentインストールスクリプトのダウンロードと実行
-curl -o setup_agent.sh https://setup.instana.io/agent
-chmod 700 ./setup_agent.sh
-sudo ./setup_agent.sh -a $INSTANA_AGENT_KEY -t dynamic -e $INSTANA_AGENT_ENDPOINT
-
-# Agentのステータス確認
-sudo systemctl status instana-agent
-
-# ログ確認
-sudo journalctl -u instana-agent -f
-```
-
-### Step 8: Djangoアプリケーションのセットアップ
-
-```bash
-# demo_appディレクトリに移動
-cd ~/wrong-is-new-down-demo/demo_app
-
-# 環境変数の設定（.envファイルを作成）
-cat > .env << EOF
-DEBUG=True
-SECRET_KEY=your-secret-key-here-change-in-production
-DATABASE_NAME=demo_app
-DATABASE_USER=demo_user
-DATABASE_PASSWORD=demo_password_123
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
-ALLOWED_HOSTS=*
-EOF
-
-# データベースマイグレーション
+# Run database migrations
 python manage.py migrate
 
-# スーパーユーザーの作成（オプション）
+# Create a superuser for testing
 python manage.py createsuperuser
+# Follow the prompts to create username and password
 
-# 静的ファイルの収集
-python manage.py collectstatic --noinput
+# Start the development server
+python manage.py runserver 0.0.0.0:8000 --noreload
 ```
 
-### Step 9: アプリケーションの起動
+**Important**: The `--noreload` option is required to prevent Django from checking database connections on startup.
+
+### Step 3: Verify Installation
 
 ```bash
-# 開発サーバーの起動
-python manage.py runserver 0.0.0.0:8000
+# In a new terminal, test the application
+curl http://localhost:8000/
 
-# または、本番環境ではGunicornを使用
-# pip install gunicorn
-# gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+# You should see the home page HTML
 ```
 
-### Step 10: 動作確認
+## Manual Setup (Alternative)
+
+If you prefer manual setup or the automated script fails:
+
+### 1. Install System Dependencies
 
 ```bash
-# 別のターミナルで接続テスト
-curl http://localhost:8000/login/
-
-# ブラウザでアクセス
-# http://<EC2-PUBLIC-IP>:8000/login/
+sudo apt-get update
+sudo apt-get install -y postgresql postgresql-contrib
+sudo apt-get install -y python3-pip python3-venv python3-dev libpq-dev
 ```
 
----
-
-## 本番環境向けの追加設定
-
-### systemdサービスの作成（自動起動設定）
+### 2. Configure PostgreSQL
 
 ```bash
-# サービスファイルの作成
-sudo vim /etc/systemd/system/demo-app.service
-```
-
-```ini
-[Unit]
-Description=Wrong is the new Down Demo Application
-After=network.target postgresql.service
-
-[Service]
-User=ubuntu
-Group=ubuntu
-WorkingDirectory=/home/ubuntu/demo/wrong-is-new-down-demo/demo_app
-Environment="PATH=/home/ubuntu/demo/wrong-is-new-down-demo/venv/bin"
-ExecStart=/home/ubuntu/demo/wrong-is-new-down-demo/venv/bin/gunicorn \
-    --workers 3 \
-    --bind 0.0.0.0:8000 \
-    config.wsgi:application
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```bash
-# サービスの有効化と起動
-sudo systemctl daemon-reload
-sudo systemctl start demo-app
-sudo systemctl enable demo-app
-
-# ステータス確認
-sudo systemctl status demo-app
-```
-
-### Nginxのセットアップ（リバースプロキシ）
-
-```bash
-# Nginxのインストール
-sudo apt install -y nginx
-
-# 設定ファイルの作成
-sudo vim /etc/nginx/sites-available/demo-app
-```
-
-```nginx
-server {
-    listen 80;
-    server_name <EC2-PUBLIC-IP>;
-
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /static/ {
-        alias /home/ubuntu/demo/wrong-is-new-down-demo/demo_app/staticfiles/;
-    }
-}
-```
-
-```bash
-# 設定の有効化
-sudo ln -s /etc/nginx/sites-available/demo-app /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
----
-
-## トラブルシューティング
-
-### PostgreSQL接続エラー
-
-```bash
-# PostgreSQLの接続設定を確認
-sudo vim /etc/postgresql/14/main/pg_hba.conf
-
-# 以下の行があることを確認
-# local   all             all                                     peer
-# host    all             all             127.0.0.1/32            md5
-
-# PostgreSQL再起動
-sudo systemctl restart postgresql
-```
-
-### ポート8000が使用できない
-
-```bash
-# ポートの使用状況確認
-sudo lsof -i :8000
-
-# プロセスの終了
-kill -9 <PID>
-```
-
-### Instana Agentが起動しない
-
-```bash
-# ログの詳細確認
-sudo journalctl -u instana-agent -n 100 --no-pager
-
-# 設定ファイルの確認
-sudo vim /opt/instana/agent/etc/instana/configuration.yaml
-
-# Agent再起動
-sudo systemctl restart instana-agent
-```
-
-### Djangoのマイグレーションエラー
-
-```bash
-# データベース接続テスト
-python manage.py dbshell
-
-# マイグレーションの初期化
-python manage.py migrate --run-syncdb
-
-# マイグレーション履歴の確認
-python manage.py showmigrations
-```
-
----
-
-## セキュリティの強化
-
-### ファイアウォールの設定
-
-```bash
-# UFWの有効化
-sudo ufw allow 22/tcp
-sudo ufw allow 80/tcp
-sudo ufw allow 8000/tcp
-sudo ufw enable
-sudo ufw status
-```
-
-### SECRET_KEYの生成
-
-```python
-# Pythonで新しいSECRET_KEYを生成
-python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-```
-
-### 環境変数の保護
-
-```bash
-# .envファイルのパーミッション設定
-chmod 600 .env
-
-# .gitignoreに追加（Git使用時）
-echo ".env" >> .gitignore
-```
-
----
-
-## バックアップとリストア
-
-### データベースのバックアップ
-
-```bash
-# バックアップの作成
-sudo -u postgres pg_dump demo_app > ~/demo_app_backup_$(date +%Y%m%d).sql
-
-# リストア
-sudo -u postgres psql demo_app < ~/demo_app_backup_20251115.sql
-```
-
----
-
-## 環境のクリーンアップ
-
-```bash
-# アプリケーションの停止
-sudo systemctl stop demo-app
-sudo systemctl stop nginx
-
-# データベースの削除
+# Switch to postgres user
 sudo -u postgres psql
-DROP DATABASE demo_app;
-DROP USER demo_user;
+
+# In PostgreSQL prompt, create user and database
+CREATE USER postgres WITH PASSWORD 'postgres';
+ALTER USER postgres WITH SUPERUSER;
+CREATE DATABASE demo_app OWNER postgres;
 \q
-
-# Instana Agentのアンインストール
-sudo systemctl stop instana-agent
-sudo apt remove --purge instana-agent
-
-# ファイルの削除
-rm -rf ~/demo/wrong-is-new-down-demo
 ```
 
----
+### 3. Set Up Python Environment
 
-## 次のステップ
+```bash
+# Create project directory
+mkdir -p ~/wrong-is-new-down-demo
+cd ~/wrong-is-new-down-demo
 
-セットアップが完了したら、[README.md](README.md)の「デモ実施手順」に従ってデモを実行してください。
+# Create virtual environment
+python3 -m venv venv
 
-## サポート
+# Activate virtual environment
+source venv/bin/activate
 
-問題が発生した場合は、以下を確認してください：
-1. [README.md](README.md)のトラブルシューティングセクション
-2. Djangoのログ: `python manage.py runserver --traceback`
-3. PostgreSQLのログ: `sudo journalctl -u postgresql -f`
-4. Instanaのログ: `sudo journalctl -u instana-agent -f`
+# Install Python packages
+pip install Django==4.2 psycopg2-binary
+```
+
+### 4. Extract Demo Application
+
+```bash
+# Extract the demo application files to:
+# ~/wrong-is-new-down-demo/demo_app/
+```
+
+### 5. Configure Environment
+
+```bash
+# Create .env file
+cat > .env << EOF
+DB_NAME=demo_app
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DEBUG=True
+SECRET_KEY=demo-secret-key-change-in-production
+ALLOWED_HOSTS=*
+CUSTOM_DB_NAME=demo_app
+EOF
+```
+
+## Scenario Demonstration
+
+### Scenario 1: Normal Operation
+
+```bash
+cd ~/wrong-is-new-down-demo
+source venv/bin/activate
+./scripts/switch_to_normal.sh
+
+# Test login
+curl -X POST http://localhost:8000/login/ \
+  -d "username=admin&password=yourpassword"
+
+# Expected: HTTP 200 OK
+```
+
+### Scenario 2: Problem Mode (Wrong is the new Down)
+
+```bash
+./scripts/switch_to_problem.sh
+
+# Test login with detailed output
+curl -i -X POST http://localhost:8000/login/ \
+  -d "username=admin&password=yourpassword"
+
+# Expected output:
+# HTTP/1.1 302 Found
+# Location: /500.html
+# 
+# Then browser automatically follows to /500.html
+# HTTP/1.1 200 OK
+# (500 error page content)
+#
+# Result: Monitoring tools see "302→200" = Normal!
+```
+
+### Scenario 3: Fixed Mode (Proper Error Detection)
+
+```bash
+./scripts/switch_to_fixed.sh
+
+# Normal operation works fine
+curl -X POST http://localhost:8000/login/ \
+  -d "username=admin&password=yourpassword"
+
+# Expected: HTTP 200 OK
+
+# To test error scenario, manually change DB name in db_utils.py
+# Then retry login:
+# Expected: HTTP 500 Internal Server Error
+```
+
+## Understanding the Demo
+
+### HTTP Status Code Flow
+
+**Problem Mode (BEFORE)**:
+```
+POST /login/ → OperationalError
+             → try-except catches
+             → return HttpResponseRedirect('/500.html')
+             → HTTP 302 Found
+
+GET /500.html → custom_500_view()
+              → render(..., status=200)
+              → HTTP 200 OK
+
+Monitoring tools: "302→200 = Normal operation" ✗
+```
+
+**Fixed Mode (AFTER)**:
+```
+POST /login/ → OperationalError
+             → No try-except
+             → Exception propagates to Django
+             → Django returns HTTP 500
+             → HTTP 500 Internal Server Error
+
+Monitoring tools: "500 = Server error detected" ✓
+```
+
+## Instana Integration (Optional)
+
+To see the full monitoring demonstration with IBM Instana:
+
+### Install Instana Agent
+
+```bash
+# Contact your Instana administrator for agent installation
+# Typically:
+curl -o setup_agent.sh https://setup.instana.io/agent
+sudo bash setup_agent.sh -a YOUR_AGENT_KEY -t dynamic -e YOUR_ENDPOINT
+```
+
+### Configure Instana
+
+The demo automatically includes trace information. Instana will:
+
+1. **Problem Mode**: Show HTTP 302 as normal (green status)
+2. **Fixed Mode**: Show HTTP 500 as error (red status, alerts triggered)
+
+## Troubleshooting
+
+See `TROUBLESHOOTING.md` for common issues and solutions.
+
+## File Structure
+
+```
+wrong-is-new-down-demo/
+├── README.md                    # Overview
+├── QUICKSTART.md                # 15-minute quick start
+├── SETUP.md                     # This file
+├── TROUBLESHOOTING.md          # Troubleshooting guide
+├── setup_ec2.sh                # Automated setup script
+├── .env                        # Environment variables
+├── demo_app/                   # Django application
+│   ├── manage.py
+│   ├── config/
+│   │   ├── settings.py         # Django settings (DB always correct)
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── login_app/
+│   │   ├── views.py            # Current active views
+│   │   ├── views_before.py     # BEFORE version (HTTP 302)
+│   │   ├── views_after.py      # AFTER version (HTTP 500)
+│   │   ├── db_utils.py         # Custom DB connection class
+│   │   └── templates/
+│   │       └── login_app/
+│   │           ├── index.html
+│   │           ├── login.html
+│   │           └── 500.html
+│   └── templates/
+│       └── 500.html            # Django standard 500 page
+├── scripts/
+│   ├── switch_to_normal.sh     # Switch to normal mode
+│   ├── switch_to_problem.sh    # Switch to problem mode
+│   └── switch_to_fixed.sh      # Switch to fixed mode
+└── logs/
+    └── server.log              # Django server logs
+```
+
+## Security Considerations
+
+This is a demonstration application and should NOT be used in production:
+
+- Uses default credentials (`postgres`/`postgres`)
+- Simplified authentication logic
+- No HTTPS/SSL configuration
+- DEBUG mode enabled by default
+- No rate limiting or security hardening
+
+## Next Steps
+
+1. Review the code in `demo_app/login_app/` to understand the implementation
+2. Test all three scenarios to see the different behaviors
+3. Use browser Developer Tools (F12) to inspect HTTP status codes
+4. Configure Instana to see the monitoring difference
+5. Modify the code to experiment with different error handling approaches
+
+## License
+
+This is a demonstration application for educational purposes.
+
+## Support
+
+For questions or issues, please refer to `TROUBLESHOOTING.md` or contact the maintainer.

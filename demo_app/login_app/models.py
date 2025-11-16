@@ -1,4 +1,4 @@
 from django.db import models
 
-# Create your models here.
-# (No models needed for this demo)
+# No custom models needed for this demo
+# We use Django's built-in User model

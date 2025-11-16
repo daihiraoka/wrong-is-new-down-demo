@@ -1,64 +1,86 @@
 #!/bin/bash
 
-##############################################################################
-# 修正版への切り替えスクリプト
-# 
-# カスタムError Handlerを無効化して、Django標準のHTTP 500を返すようにします。
-# これによりInstanaが正しくエラーを検知できます。
-##############################################################################
+#######################################
+# Switch to Fixed Mode
+# Django standard error handling (HTTP 500)
+#######################################
 
 set -e
 
-# カラー定義
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+DEMO_APP_DIR="$PROJECT_DIR/demo_app"
 
-echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}修正版への切り替え${NC}"
-echo -e "${GREEN}========================================${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔵 Switching to FIXED MODE (Proper Error Handling)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
 
-# .envファイルのパス
-ENV_FILE="../demo_app/.env"
-
-if [ ! -f "$ENV_FILE" ]; then
-    echo -e "${RED}エラー: .envファイルが見つかりません${NC}"
-    echo -e "${BLUE}パス: $ENV_FILE${NC}"
+# Check if virtual environment exists
+if [ ! -d "$PROJECT_DIR/venv" ]; then
+    echo "⚠️  Virtual environment not found!"
+    echo "   Please run setup_ec2.sh first"
     exit 1
 fi
 
-# USE_CUSTOM_ERROR_HANDLER=Falseに設定
-if grep -q "USE_CUSTOM_ERROR_HANDLER" "$ENV_FILE"; then
-    # 既存の行を置き換え
-    sed -i 's/USE_CUSTOM_ERROR_HANDLER=.*/USE_CUSTOM_ERROR_HANDLER=False/' "$ENV_FILE"
-    echo -e "${GREEN}✓ USE_CUSTOM_ERROR_HANDLERをFalseに設定しました${NC}"
+# Reminder to activate virtual environment
+if [ -z "$VIRTUAL_ENV" ]; then
+    echo "⚠️  REMINDER: Activate virtual environment first!"
+    echo "   Run: source venv/bin/activate"
+    echo ""
+fi
+
+# Step 1: Set custom DB access class to correct database name
+echo "Step 1/4: Setting custom DB connection to correct database..."
+cd "$DEMO_APP_DIR"
+sed -i "s/DB_NAME = .*/DB_NAME = 'demo_app'  # Correct database name/" login_app/db_utils.py
+echo "   ✅ Custom DB connection: demo_app"
+
+# Step 2: Use AFTER version views (NO try-except)
+echo "Step 2/4: Using AFTER version views (Django standard error handling)..."
+cp login_app/views_after.py login_app/views.py
+echo "   ✅ Views: AFTER version (no try-except, returns HTTP 500 on error)"
+
+# Step 3: Set DEBUG=False for production-like error handling
+echo "Step 3/4: Configuring Django for production error handling..."
+sed -i "s/DEBUG = .*/DEBUG = False/" config/settings.py
+sed -i "s/ALLOWED_HOSTS = .*/ALLOWED_HOSTS = ['*']/" config/settings.py
+echo "   ✅ Django DEBUG=False (production mode)"
+
+# Step 4: Restart Django server
+echo "Step 4/4: Restarting Django server..."
+pkill -f "manage.py runserver" 2>/dev/null || true
+sleep 2
+
+if [ -n "$VIRTUAL_ENV" ]; then
+    nohup python manage.py runserver 0.0.0.0:8000 --noreload > ../logs/server.log 2>&1 &
+    sleep 3
+    echo "   ✅ Django server restarted"
 else
-    # 行が存在しない場合は追加
-    echo "USE_CUSTOM_ERROR_HANDLER=False" >> "$ENV_FILE"
-    echo -e "${GREEN}✓ USE_CUSTOM_ERROR_HANDLERを追加しました${NC}"
+    echo "   ⚠️  Server not started (virtual environment not activated)"
 fi
 
 echo ""
-echo -e "${BLUE}現在の設定:${NC}"
-grep "USE_CUSTOM_ERROR_HANDLER" "$ENV_FILE"
-
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ FIXED MODE Active (Proper Error Detection)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo -e "${GREEN}✅ カスタムError Handlerが無効化されました${NC}"
-echo -e "${GREEN}✅ エラー発生時にHTTP 500を返します${NC}"
+echo "Configuration:"
+echo "  Django settings.py DB:  demo_app"
+echo "  Custom DB connection:   demo_app ✅"
+echo "  Error handling:         Django standard (no try-except)"
+echo "  DEBUG:                  False (production mode)"
 echo ""
-echo -e "${BLUE}次のステップ:${NC}"
-echo "1. アプリケーションを再起動してください"
-echo "   cd ../demo_app"
-echo "   python manage.py runserver 0.0.0.0:8000"
+echo "Expected Behavior:"
+echo "  ✅ Login succeeds normally"
+echo "  ✅ If database error occurs: HTTP 500 returned"
+echo "  ✅ Monitoring tools can properly detect errors"
+echo "  ✅ Proper alerting and incident response"
 echo ""
-echo "2. ブラウザでログインを試みてください"
-echo "   → HTTP 500が返ります"
-echo "   → Instanaが正しくエラーを検知します（修正成功！）"
+echo "To test error scenario:"
+echo "  1. Run: ./switch_to_problem.sh"
+echo "  2. Then run: ./switch_to_fixed.sh"
+echo "  3. Change DB name in db_utils.py to 'wrong_demo_app'"
+echo "  4. Test: curl -i -X POST http://localhost:8000/login/ ..."
+echo "  5. Observe HTTP 500 response (not HTTP 302)"
 echo ""
-echo "3. データベース接続を修復する場合は"
-echo "   cd ../scripts"
-echo "   ./fix_database.sh"
-echo ""
-echo -e "${GREEN}========================================${NC}"

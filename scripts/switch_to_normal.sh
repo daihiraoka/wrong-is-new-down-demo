@@ -1,9 +1,8 @@
 #!/bin/bash
 
 #######################################
-# Switch to Problem Mode
-# "Wrong is the new Down" scenario
-# Database error returns HTTP 302
+# Switch to Normal Mode
+# System works correctly (HTTP 200)
 #######################################
 
 set -e
@@ -13,7 +12,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 DEMO_APP_DIR="$PROJECT_DIR/demo_app"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🔴 Switching to PROBLEM MODE (Wrong is the new Down)"
+echo "🟢 Switching to NORMAL MODE"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -31,16 +30,16 @@ if [ -z "$VIRTUAL_ENV" ]; then
     echo ""
 fi
 
-# Step 1: Set custom DB access class to WRONG database name
-echo "Step 1/3: Setting custom DB connection to WRONG database..."
+# Step 1: Set custom DB access class to correct database name
+echo "Step 1/3: Setting custom DB connection to correct database..."
 cd "$DEMO_APP_DIR"
-sed -i "s/DB_NAME = .*/DB_NAME = 'wrong_demo_app'  # WRONG database name (does not exist)/" login_app/db_utils.py
-echo "   ⚠️  Custom DB connection: wrong_demo_app (DOES NOT EXIST)"
+sed -i "s/DB_NAME = .*/DB_NAME = 'demo_app'  # Correct database name/" login_app/db_utils.py
+echo "   ✅ Custom DB connection: demo_app"
 
-# Step 2: Use BEFORE version views (with try-except, will catch error)
-echo "Step 2/3: Using BEFORE version views (try-except active)..."
+# Step 2: Use BEFORE version views (with try-except, but won't be triggered)
+echo "Step 2/3: Using BEFORE version views (try-except sleeping)..."
 cp login_app/views_before.py login_app/views.py
-echo "   ⚠️  Views: BEFORE version (will return HTTP 302)"
+echo "   ✅ Views: BEFORE version (with try-except handler)"
 
 # Step 3: Restart Django server
 echo "Step 3/3: Restarting Django server..."
@@ -57,27 +56,19 @@ fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "⚠️  PROBLEM MODE Active (Wrong is the new Down)"
+echo "✅ NORMAL MODE Active"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Configuration:"
-echo "  Django settings.py DB:  demo_app (unchanged)"
-echo "  Custom DB connection:   wrong_demo_app ❌ (does not exist)"
-echo "  Error handling:         try-except (active ⚡ → HTTP 302)"
+echo "  Django settings.py DB:  demo_app"
+echo "  Custom DB connection:   demo_app ✅"
+echo "  Error handling:         try-except (sleeping 💤)"
 echo ""
 echo "Expected Behavior:"
-echo "  ❌ Database connection fails"
-echo "  ⚠️  Returns HTTP 302 → /500.html"
-echo "  ⚠️  /500.html returns HTTP 200"
-echo "  ⚠️  Monitoring tools see '302→200' as NORMAL"
-echo "  ❌ Error is HIDDEN from monitoring!"
-echo ""
-echo "This is the 'Wrong is the new Down' phenomenon:"
-echo "  - System is running"
-echo "  - User sees error page"
-echo "  - But monitoring tools think everything is fine!"
+echo "  ✅ Login succeeds"
+echo "  ✅ HTTP 200 OK"
+echo "  ✅ Monitoring tools see normal operation"
 echo ""
 echo "Test with:"
-echo "  curl -i -X POST http://localhost:8000/login/ -d 'username=admin&password=yourpass'"
-echo "  (Watch for HTTP 302 followed by HTTP 200)"
+echo "  curl -X POST http://localhost:8000/login/ -d 'username=admin&password=yourpass'"
 echo ""

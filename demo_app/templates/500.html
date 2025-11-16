@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 Internal Server Error</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #dc3545;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #dc3545;
+            font-size: 72px;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #dc3545;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #6c757d;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .explanation {
+            margin-top: 30px;
+            padding: 20px;
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            border-radius: 5px;
+            text-align: left;
+        }
+        
+        .explanation h3 {
+            color: #0c5460;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .explanation p {
+            color: #0c5460;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🔧</div>
+        <h1>500</h1>
+        <h2>Internal Server Error</h2>
+        <p>A server error has occurred.</p>
+        <p>This error is now properly reported with HTTP 500 status.</p>
+        
+        <div class="badge">FIXED MODE - Monitoring Tools Can Detect This</div>
+        
+        <div class="explanation">
+            <h3>What Changed (AFTER Fix)?</h3>
+            <p>
+                <strong>Django Standard Error Handling:</strong> The application no longer 
+                catches database errors with try-except. Instead, it lets Django's standard 
+                error handler return HTTP 500, which monitoring tools can properly detect.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
