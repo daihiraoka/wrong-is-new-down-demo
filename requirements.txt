@@ -15,7 +15,7 @@ requests==2.31.0
 python-dateutil==2.8.2
 
 # Instana (optional - for enhanced tracing)
-instana==2.1.0
+instana
 
 # Development and Debugging
 django-debug-toolbar==4.2.0
