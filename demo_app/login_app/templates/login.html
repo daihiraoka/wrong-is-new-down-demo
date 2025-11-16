@@ -253,8 +253,7 @@
         </div>
         
         <div class="footer">
-            <p>IBM Instana × システムリサーチ株式会社</p>
-            <p>2025年11月 - AI時代に向けた若手技術者の挑戦</p>
+            <p>IBM Instana × Wrong is the new Down デモ</p>
         </div>
     </div>
     
@@ -290,17 +289,17 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    successMessage.textContent = '✅ ' + data.message;
+                    successMessage.textContent = 'OK ' + data.message;
                     successMessage.style.display = 'block';
                     form.reset();
                 } else {
-                    errorMessage.textContent = '❌ ' + (data.message || 'エラーが発生しました');
+                    errorMessage.textContent = 'Error ' + (data.message || 'エラーが発生しました');
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
                 loading.style.display = 'none';
                 submitButton.disabled = false;
-                errorMessage.textContent = '❌ 通信エラーが発生しました: ' + error.message;
+                errorMessage.textContent = 'Error 通信エラーが発生しました: ' + error.message;
                 errorMessage.style.display = 'block';
                 
                 // Log to console for debugging
@@ -310,7 +309,6 @@
         
         // Add some debugging info to console
         console.log('Wrong is the new Down - Demo Application');
-        console.log('IBM Instana × システムリサーチ株式会社');
     </script>
 </body>
 </html>
