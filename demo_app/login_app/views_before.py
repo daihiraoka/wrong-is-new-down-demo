@@ -53,15 +53,15 @@ def login_view(request):
             if user:
                 # 実際のアプリケーションでは、パスワードハッシュを検証します
                 # デモ目的では、ユーザーの存在のみをチェックします
-                return HttpResponse(
-                    "<h1>ログイン成功</h1><p>おかえりなさい！</p>",
-                    status=200
-                )
+                scenario = request.POST.get('scenario', 'normal')
+                context = {
+                    'username': username,
+                    'scenario': scenario
+                }
+                return render(request, 'login_app/index.html', context, status=200)
             else:
-                return HttpResponse(
-                    "<h1>ログイン失敗</h1><p>ユーザー名またはパスワードが無効です</p>",
-                    status=401
-                )
+                context = {'error_message': 'ユーザー名またはパスワードが無効です'}
+                return render(request, 'login_app/login.html', context, status=401)
                 
         except psycopg2.OperationalError as e:
             # 問題点: データベースエラーをキャッチしてエラーページにリダイレクト
