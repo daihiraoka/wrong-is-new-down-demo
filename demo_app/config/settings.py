@@ -3,6 +3,7 @@ Django settings for Wrong is the new Down demo project.
 """
 
 import os
+import instana
 from pathlib import Path
 from decouple import config
 
