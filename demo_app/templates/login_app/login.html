@@ -10,9 +10,9 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN', 'Meiryo', 'メイリオ', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -20,224 +20,287 @@
             align-items: center;
             padding: 20px;
         }
-        
+
         .login-container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 900px;
             width: 100%;
-            padding: 50px 40px;
+            display: flex;
+            min-height: 500px;
         }
-        
-        h1 {
-            color: #333;
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-left h1 {
             font-size: 32px;
-            margin-bottom: 10px;
-            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
         }
-        
-        .subtitle {
-            color: #666;
-            font-size: 14px;
-            text-align: center;
+
+        .login-left p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.95;
             margin-bottom: 30px;
         }
-        
+
+        .demo-info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-info h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .demo-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .demo-info li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .demo-info li:last-child {
+            border-bottom: none;
+        }
+
+        .demo-info strong {
+            display: inline-block;
+            min-width: 140px;
+        }
+
+        .login-right {
+            flex: 1;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-right h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .login-right .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
         .form-group {
             margin-bottom: 25px;
         }
-        
-        label {
+
+        .form-group label {
             display: block;
-            color: #555;
-            font-size: 14px;
-            font-weight: 600;
             margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
         }
-        
-        input[type="text"],
-        input[type="password"] {
+
+        .form-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e1e1;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
             font-family: inherit;
         }
-        
-        input[type="text"]:focus,
-        input[type="password"]:focus {
+
+        .form-group input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        
-        .button {
+
+        .login-button {
             width: 100%;
+            padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            font-family: inherit;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
         }
-        
-        .button:hover {
+
+        .login-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
-        
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #667eea;
-            text-decoration: none;
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
             font-size: 14px;
         }
-        
-        .back-link:hover {
-            text-decoration: underline;
+
+        .scenario-selector {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
         }
-        
-        .info-box {
-            background: #f0f7ff;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-        
-        .info-box p {
-            color: #555;
-            font-size: 13px;
-            line-height: 1.6;
-            margin-bottom: 8px;
-        }
-        
-        .info-box strong {
+
+        .scenario-selector h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
             color: #333;
         }
-        
-        #message {
-            margin-top: 15px;
-            padding: 12px;
+
+        .scenario-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .scenario-button {
+            flex: 1;
+            min-width: 150px;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
             border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
             text-align: center;
-            font-size: 14px;
-            display: none;
         }
-        
-        .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        .scenario-button:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
         }
-        
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+
+        .scenario-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-left, .login-right {
+                padding: 40px 30px;
+            }
+
+            .login-left {
+                min-height: auto;
+            }
         }
     </style>
-    <script>
-  (function(s,t,a,n){s[t]||(s[t]=a,n=s[a]=function(){n.q.push(arguments)},
-  n.q=[],n.v=2,n.l=1*new Date)})(window,"InstanaEumObject","ineum");
-
-  ineum('reportingUrl', 'https://eum-blue-saas.instana.io');
-  ineum('key', 'svc7MqB5S62X_lCW3VuoZQ');
-  ineum('trackSessions');
-</script>
-<script defer crossorigin="anonymous" src="https://eum.instana.io/1.8.1/eum.min.js"
- integrity="sha384-qFzHZ5BC7HOPEBSYkbYSv+DBWrG34P1QW9mIaCR41db6yOJNYmH4antW6KLkc6v1"></script>
 </head>
 <body>
     <div class="login-container">
-        <h1>ログイン</h1>
-        <p class="subtitle">デモをテストするために認証情報を入力してください</p>
-        
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="username">ユーザー名</label>
-                <input type="text" id="username" name="username" required>
+        <div class="login-left">
+            <h1>🎯 Wrong is the new Down</h1>
+            <p>システムは稼働しているのに、結果が間違っている――これが現代のシステム監視における新たな課題です。</p>
+            
+            <div class="demo-info">
+                <h3>📋 デモシナリオ</h3>
+                <ul>
+                    <li><strong>正常動作：</strong> HTTP 200でログイン成功</li>
+                    <li><strong>BEFORE版：</strong> エラー時にHTTP 302（リダイレクト）を返却</li>
+                    <li><strong>AFTER版：</strong> エラー時に正しくHTTP 500を返却</li>
+                </ul>
             </div>
-            
-            <div class="form-group">
-                <label for="password">パスワード</label>
-                <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="login-right">
+            <h2>ログイン</h2>
+            <p class="subtitle">デモアカウントでログインしてください</p>
+
+            {% if error_message %}
+            <div class="error-message">
+                {{ error_message }}
             </div>
-            
-            <button type="submit" class="button">ログイン</button>
-            
-            <div id="message"></div>
-        </form>
-        
-        <a href="/" class="back-link">ホームに戻る</a>
-        
-        <div class="info-box">
-            <p><strong>デモ用ユーザー:</strong></p>
-            <p>ユーザー名: <code>demo</code>, <code>test</code>, <code>admin</code></p>
-            <p>パスワード: 任意（現在のデモ版ではパスワードチェックなし）</p>
-            <p style="margin-top: 10px; font-size: 12px; color: #856404;">
-                <strong>注意:</strong> 異なるシナリオをテストするには、
-                切り替えスクリプト（break_database.sh / fix_database.sh）を使用してください。
-            </p>
+            {% endif %}
+
+            <div class="scenario-selector">
+                <h3>テストシナリオを選択</h3>
+                <div class="scenario-buttons">
+                    <button class="scenario-button active" onclick="selectScenario('normal')">
+                        ✅ 正常動作
+                    </button>
+                    <button class="scenario-button" onclick="selectScenario('before')">
+                        ⚠️ BEFORE版
+                    </button>
+                    <button class="scenario-button" onclick="selectScenario('after')">
+                        ✅ AFTER版
+                    </button>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'login' %}" id="loginForm">
+                {% csrf_token %}
+                <input type="hidden" name="scenario" id="scenarioInput" value="normal">
+                
+                <div class="form-group">
+                    <label for="username">ユーザー名</label>
+                    <input type="text" id="username" name="username" required 
+                           placeholder="demo" value="demo">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="任意のパスワード" value="test123">
+                </div>
+
+                <button type="submit" class="login-button">ログイン</button>
+            </form>
         </div>
     </div>
-    
+
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        let currentScenario = 'normal';
+
+        function selectScenario(scenario) {
+            currentScenario = scenario;
+            document.getElementById('scenarioInput').value = scenario;
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('message');
-            
-            fetch('/login/submit/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
-            })
-            .then(response => {
-                if (response.redirected) {
-                    // HTTP 302リダイレクトの場合（問題モード）
-                    messageDiv.textContent = 'エラーページにリダイレクトされました（HTTP 302 - Wrong is the new Down）';
-                    messageDiv.className = 'error';
-                    messageDiv.style.display = 'block';
-                    
-                    // リダイレクト先に移動
-                    setTimeout(() => {
-                        window.location.href = response.url;
-                    }, 2000);
-                    return null;
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data) {
-                    if (data.success) {
-                        messageDiv.textContent = data.message;
-                        messageDiv.className = 'success';
-                    } else {
-                        messageDiv.textContent = data.message || 'ログインに失敗しました';
-                        messageDiv.className = 'error';
-                    }
-                    messageDiv.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                messageDiv.textContent = 'エラーが発生しました: ' + error.message;
-                messageDiv.className = 'error';
-                messageDiv.style.display = 'block';
+            // Update button states
+            document.querySelectorAll('.scenario-button').forEach(btn => {
+                btn.classList.remove('active');
             });
-        });
+            event.target.classList.add('active');
+        }
     </script>
 </body>
 </html>
